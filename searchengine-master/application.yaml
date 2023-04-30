@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: root
+    password: testtest
+    url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jsoup-settings:
+  userAgent: VenturaSearchBot
+  referrer: http://www.google.com
+
+indexing-settings:
+  sites:
+    - url: https://www.playback.ru
+      name: PlayBack.Ru
+    - url: https://skillbox.ru/
+      name: skillbox.ru
+    - url: https://volochek.life/
+      name: volochek.life
+    - url: https://radiomv.ru/
+      name: radiomv.ru
+    - url: https://ipfran.ru/
+      name: ipfran.ru
+
