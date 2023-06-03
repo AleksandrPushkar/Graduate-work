@@ -7,6 +7,6 @@ import searchengine.model.EntitySite;
 
 @Repository
 public interface LemmaRepository extends CrudRepository<EntityLemma, Integer> {
-    int countAllBySiteId(EntitySite site);
-    Iterable<EntityLemma> findAllByLemma(String lemma);
+    int countAllBySite(EntitySite site);
+    EntityLemma findBySiteAndLemma(EntitySite site, String lemma);
 }

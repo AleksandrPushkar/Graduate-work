@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import searchengine.config.Site;
 import searchengine.config.SitesList;
 import searchengine.dto.statistics.*;
+import searchengine.exceptions.statistics.ConfigSitesNotFoundException;
 import searchengine.model.EntitySite;
 import searchengine.services.indexing.IndexingService;
 
@@ -22,8 +23,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public StatisticsResponse getStatistics() {
         if(sites.getSites().size() == 0)
-            return new StatisticsResponse(false, null,
-                    InfoErrorStatistics.getErrorInfoWhenGettingStatistics());
+            throw new ConfigSitesNotFoundException();
 
         StatisticsData data = createStatisticsData();
         return new StatisticsResponse(true, data, null);

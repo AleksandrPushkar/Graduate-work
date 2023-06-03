@@ -1,13 +1,15 @@
 package searchengine.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import searchengine.dto.indexing.IndexingResponse;
+import searchengine.dto.search.SearchResponse;
 import searchengine.dto.statistics.StatisticsResponse;
 import searchengine.services.indexing.IndexingService;
+import searchengine.services.search.SearchService;
 import searchengine.services.statistics.StatisticsService;
+import searchengine.workersservices.searcher.OptionsSearch;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,55 +17,38 @@ import searchengine.services.statistics.StatisticsService;
 public class ApiController {
     private final StatisticsService statisticsService;
     private final IndexingService indexingService;
+    private final SearchService searchService;
 
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponse> statistics() {
-        StatisticsResponse response = statisticsService.getStatistics();
-
-        if (response.getError() == null)
-            return ResponseEntity.ok(response);
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.ok(statisticsService.getStatistics());
     }
 
     @GetMapping("/startIndexing")
     public ResponseEntity<IndexingResponse> startIndexing() {
-        IndexingResponse response = indexingService.startIndexing();
-
-        if (response.getError() == null)
-            return ResponseEntity.ok(response);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.ok(indexingService.startIndexing());
     }
 
     @GetMapping("/stopIndexing")
     public ResponseEntity<IndexingResponse> stopIndexing() {
-        IndexingResponse response = indexingService.stopIndexing();
-
-        if (response.getError() == null)
-            return ResponseEntity.ok(response);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.ok(indexingService.stopIndexing());
     }
 
     @PostMapping("/indexPage")
     public ResponseEntity<IndexingResponse> indexPage(
             @RequestParam(value = "url") String url) {
-        IndexingResponse response = indexingService.pageIndexing(url);
 
-        if (response.getError() == null)
-            return ResponseEntity.ok(response);
+        return ResponseEntity.ok(indexingService.pageIndexing(url));
+    }
 
-        String error = response.getError();
+    @GetMapping("/search")
+    public ResponseEntity<SearchResponse> search(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "20") int limit,
+            @RequestParam(required = false) String site) {
 
-        if(error.contains("Внутренняя"))
-            return ResponseEntity.status(HttpStatus
-                    .INTERNAL_SERVER_ERROR).body(response);
-
-        int code = indexingService.getHttpCodeFromString(error);
-        if (code != 0)
-            return ResponseEntity.status(code).body(response);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        OptionsSearch options = new OptionsSearch(query, offset, limit, site);
+        return ResponseEntity.ok(searchService.search(options));
     }
 }

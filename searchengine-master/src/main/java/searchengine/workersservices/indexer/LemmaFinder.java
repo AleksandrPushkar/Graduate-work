@@ -1,4 +1,4 @@
-package searchengine.indexer;
+package searchengine.workersservices.indexer;
 
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
@@ -10,7 +10,7 @@ import java.util.*;
 public class LemmaFinder {
     private String textError = "";
     private LuceneMorphology luceneMorphology;
-    private static final String[] particlesNames = new String[]{"МЕЖД", "СОЮЗ", "ПРЕДЛ", "ЧАСТ", "МС"};
+    private static final String[] particlesNames = new String[]{"МЕЖД", "СОЮЗ", "ПРЕДЛ"};
 
     public LemmaFinder() {
         try {
@@ -47,7 +47,7 @@ public class LemmaFinder {
      * @param text текст из которого будут выбираться леммы
      * @return ключ является леммой, а значение количеством найденных лемм
      */
-    private Map<String, Integer> collectLemmas(String text) {
+    public Map<String, Integer> collectLemmas(String text) {
         String[] words = arrayContainsRussianWords(text);
         HashMap<String, Integer> lemmas = new HashMap<>();
 
@@ -96,5 +96,26 @@ public class LemmaFinder {
                 .replaceAll("([^а-я\\s])", " ")
                 .trim()
                 .split("\\s+");
+    }
+
+    /*Данный метод получает в качестве параметра текст запроса. Метод
+    получает массив с русскими словами из текста запроса, далее создает
+    список на основе этого массива. И создает HashSet на основе этого
+    списка(это делается для того, чтобы исключить повторения слов в
+    запросе). Далее запускается итератор по словам из набора. В процессе
+    выполнения итерации удаляются все слова которые являются частицами*/
+    public ArrayList<String> excludeParticles(String query) {
+        String[] words = arrayContainsRussianWords(query);
+        HashSet<String> wordsSet = new HashSet<>(Arrays.asList(words));
+        Iterator<String> wordsIterator = wordsSet.iterator();
+        while (wordsIterator.hasNext()) {
+            String word = wordsIterator.next();
+            List<String> wordBaseForms = luceneMorphology.getMorphInfo(word);
+            if (anyWordBaseBelongToParticle(wordBaseForms)) {
+                wordsIterator.remove();
+            }
+        }
+
+        return new ArrayList<>(wordsSet);
     }
 }

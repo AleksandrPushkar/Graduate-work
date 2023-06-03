@@ -1,4 +1,4 @@
-package searchengine.indexer;
+package searchengine.workersservices.indexer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +45,7 @@ public class WorkUrl {
                 !ending2.equals(".pdf") && !ending2.equals(".png") &&
                 !ending2.equals(".jpg") && !ending2.equals(".ico") &&
                 !ending2.equals(".doc") && !ending3.equals(".json") &&
-                !ending3.equals(".docx");
+                !ending3.equals(".docx") && !ending3.equals(".jpeg");
     }
 
     public static String cutUrlToPath(String url) {

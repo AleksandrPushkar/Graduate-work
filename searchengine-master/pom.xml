@@ -18,6 +18,10 @@
             <id>skillbox-gitlab</id>
             <url>https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <parent>
@@ -77,8 +81,13 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
+            <version>24.0.1</version>
             <scope>compile</scope>
+    </dependency>
+        <dependency>
+            <groupId>com.github.demidko</groupId>
+            <artifactId>aot</artifactId>
+            <version>2022.11.28</version>
         </dependency>
     </dependencies>
 

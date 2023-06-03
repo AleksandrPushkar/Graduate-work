@@ -1,4 +1,4 @@
-package searchengine.indexer;
+package searchengine.workersservices.indexer;
 
 import lombok.RequiredArgsConstructor;
 

@@ -35,10 +35,10 @@ public class EntitySite {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "siteId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
     private Set<EntityPage> firstDeletePages;
 
-    @OneToMany(mappedBy = "siteId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
     private Set<EntityLemma> secondDeleteLemmas;
 
     public EntitySite(StatusIndexing status, String url, String name) {
@@ -46,5 +46,9 @@ public class EntitySite {
         this.url = url;
         this.name = name;
         statusTime = LocalDateTime.now();
+    }
+
+    public Set<EntityPage> getPages() {
+        return firstDeletePages;
     }
 }

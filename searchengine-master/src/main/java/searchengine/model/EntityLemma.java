@@ -11,7 +11,9 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "lemma")
+@Table(name = "lemma", uniqueConstraints = @UniqueConstraint(
+        columnNames = {"site_id", "lemma"}))
+
 public class EntityLemma {
 
     @Id
@@ -20,16 +22,16 @@ public class EntityLemma {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", nullable = false)
-    private EntitySite siteId;
+    private EntitySite site;
 
-    @Column(columnDefinition = "VARCHAR(255) NOT NULL, Index(lemma(50))")
+    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String lemma;
 
     @NonNull
     private int frequency;
 
-    public EntityLemma(EntitySite siteId, String lemma, int frequency) {
-        this.siteId = siteId;
+    public EntityLemma(EntitySite site, String lemma, int frequency) {
+        this.site = site;
         this.lemma = lemma;
         this.frequency = frequency;
     }

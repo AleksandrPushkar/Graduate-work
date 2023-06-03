@@ -1,4 +1,4 @@
-package searchengine.indexer;
+package searchengine.workersservices.indexer;
 
 import lombok.AllArgsConstructor;
 import org.jsoup.nodes.Document;
@@ -18,11 +18,11 @@ import java.util.concurrent.RecursiveAction;
 @AllArgsConstructor
 public class PagesIndexing extends RecursiveAction {
     private final String rootUrl;
-    private Document docRef;
     private final EntitySite site;
     private final JsoupConnect jsoupCon;
     private final LemmaFinder lemmaFinder;
     private final IndexingService indexingService;
+    private Document docRef;
 
     @Override
     protected void compute() {
@@ -49,13 +49,12 @@ public class PagesIndexing extends RecursiveAction {
                     WorkUrl.checkForDisqualification(absHref))
                 continue;
 
-            if (absHref.length() == href.length()) {
+            if (absHref.length() == href.length())
                 href = WorkUrl.cutUrlToPath(href);
-            }
 
             EntityPage page = new EntityPage(site, href);
             Document docHref = jsoupCon.getPageCode(absHref, page, null);
-            if (indexingService.synchronizedCheckSavePage(page) == null) {
+            if (indexingService.synchronizedPageSave(page)) {
                 indexingService.updateSiteStatusTime(site);
                 if (docHref != null) {
                     hashSetForFork.add(docHref);
@@ -74,7 +73,7 @@ public class PagesIndexing extends RecursiveAction {
                 return;
 
             EntityLemma lemma = new EntityLemma(site, strLemma, 1);
-            lemma = indexingService.synchronizedCheckSaveLemma(lemma);
+            lemma = indexingService.synchronizedLemmaSave(lemma);
             int quantity = lemmasPage.get(strLemma);
             EntityIndex index = new EntityIndex(page, lemma, quantity);
             indexingService.saveIndex(index);
@@ -85,7 +84,8 @@ public class PagesIndexing extends RecursiveAction {
         LinkedList<PagesIndexing> subTasks = new LinkedList<>();
         for (Document docHref : hashSetToFork) {
             PagesIndexing task = new PagesIndexing(rootUrl,
-                    docHref, site, jsoupCon, lemmaFinder, indexingService);
+                    site, jsoupCon, lemmaFinder, indexingService, docHref);
+
             task.fork();
             subTasks.add(task);
         }

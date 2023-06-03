@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import searchengine.config.SitesList;
 import searchengine.config.Site;
-import searchengine.dto.indexing.InfoErrorIndexing;
 import searchengine.dto.indexing.IndexingResponse;
-import searchengine.indexer.JsoupConnect;
-import searchengine.indexer.PageIndexing;
-import searchengine.indexer.RunPagesIndexing;
+import searchengine.exceptions.indexing.IndexingAlreadyRunningException;
+import searchengine.exceptions.indexing.IndexingNotRunningException;
+import searchengine.workersservices.indexer.JsoupConnect;
+import searchengine.workersservices.indexer.PageIndexing;
+import searchengine.workersservices.indexer.RunPagesIndexing;
 import searchengine.model.*;
 import searchengine.repository.*;
 
@@ -25,17 +26,14 @@ public class IndexingServiceImpl implements IndexingService {
     private final PageRepository pageRepo;
     private final IndexRepository indexRepo;
     private final LemmaRepository lemmaRepo;
-
-    private volatile boolean indexingRunning;
-    private volatile boolean indexingStopped;
+    private boolean indexingRunning;
+    private boolean indexingStopped;
     private final AtomicInteger countFinishThreads = new AtomicInteger();
 
     @Override
     public IndexingResponse startIndexing() {
-        if (indexingRunning) {
-            return new IndexingResponse(false,
-                    InfoErrorIndexing.getInfoErrorIndexingAlreadyRunning());
-        }
+        if (indexingRunning)
+            throw new IndexingAlreadyRunningException();
 
         List<Site> sitesList = sitesListObj.getSites();
         for (Site site : sitesList) {
@@ -44,15 +42,13 @@ public class IndexingServiceImpl implements IndexingService {
         }
 
         indexingRunning = true;
-        return new IndexingResponse(indexingRunning, null);
+        return new IndexingResponse(true, null);
     }
 
     @Override
     public IndexingResponse stopIndexing() {
-        if (!indexingRunning) {
-            return new IndexingResponse(false,
-                    InfoErrorIndexing.getInfoErrorIndexingNotRunning());
-        }
+        if (!indexingRunning)
+            throw new IndexingNotRunningException();
 
         indexingStopped = true;
         return new IndexingResponse(true, null);
@@ -60,14 +56,10 @@ public class IndexingServiceImpl implements IndexingService {
 
     @Override
     public IndexingResponse pageIndexing(String url) {
-        String error = new PageIndexing(jsoupCon, this,
+        new PageIndexing(jsoupCon, this,
                 sitesListObj.getSites()).indexing(url);
 
-        if (error == null) {
-            return new IndexingResponse(true, null);
-        }
-
-        return new IndexingResponse(false, error);
+        return new IndexingResponse(true, null);
     }
 
     @Override
@@ -81,16 +73,6 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public void setCountFinishThreads(int value) {
-        countFinishThreads.set(value);
-    }
-
-    @Override
-    public int incrementCountFinishThreads() {
-        return countFinishThreads.incrementAndGet();
-    }
-
-    @Override
     public boolean isIndexingStopped() {
         return indexingStopped;
     }
@@ -101,12 +83,13 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public int getHttpCodeFromString(String string) {
-        String[] digitArray = string.split("\\D+");
-        if (digitArray.length == 0)
-            return 0;
+    public void setCountFinishThreads(int value) {
+        countFinishThreads.set(value);
+    }
 
-        return Integer.parseInt(String.join("", digitArray));
+    @Override
+    public int incrementCountFinishThreads() {
+        return countFinishThreads.incrementAndGet();
     }
 
     @Override
@@ -140,45 +123,28 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public void savePage(EntityPage entityPage) {
-        pageRepo.save(entityPage);
+    public void savePage(EntityPage page) {
+        pageRepo.save(page);
     }
 
     @Override
-    public EntityPage synchronizedCheckSavePage(EntityPage page) {
+    public boolean synchronizedPageSave(EntityPage page) {
         synchronized (pageRepo) {
-            EntityPage foundPage = checkPageInDB(page);
-            if (foundPage != null) {
-                return foundPage;
-            }
+            boolean exists = pageRepo.existsBySiteAndPath(
+                    page.getSite(), page.getPath());
+
+            if (exists)
+                return false;
 
             pageRepo.save(page);
-            return null;
+            return true;
         }
     }
 
     @Override
-    public EntityPage checkPageInDB(EntityPage pageCheck) {
-        Iterable<EntityPage> iterablePages =
-                findAllPagesByPath(pageCheck.getPath());
-
-        for (EntityPage pageDB : iterablePages) {
-            if (pageDB.getSiteId().getId() == pageCheck.getSiteId().getId()) {
-                return pageDB;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public Iterable<EntityPage> findAllPagesByPath(String path) {
-        return pageRepo.findAllByPath(path);
-    }
-
-    @Override
-    public int getCountPagesInSite(EntitySite site) {
-        return pageRepo.countAllBySiteId(site);
+    public EntityPage findPageBySiteAndPath(EntityPage page) {
+        return pageRepo.findBySiteAndPath(
+                page.getSite(), page.getPath());
     }
 
     @Override
@@ -187,14 +153,21 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
+    public int getCountPagesInSite(EntitySite site) {
+        return pageRepo.countAllBySite(site);
+    }
+
+    @Override
     public void saveLemma(EntityLemma lemma) {
         lemmaRepo.save(lemma);
     }
 
     @Override
-    public EntityLemma synchronizedCheckSaveLemma(EntityLemma lemma) {
+    public EntityLemma synchronizedLemmaSave(EntityLemma lemma) {
         synchronized (lemmaRepo) {
-            EntityLemma foundLemma = checkLemmaInDB(lemma);
+            EntityLemma foundLemma = lemmaRepo.findBySiteAndLemma(
+                    lemma.getSite(), lemma.getLemma());
+
             if (foundLemma != null) {
                 foundLemma.setFrequency(foundLemma.getFrequency() + 1);
                 lemma = foundLemma;
@@ -205,32 +178,13 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public EntityLemma checkLemmaInDB(EntityLemma lemmaCheck) {
-        Iterable<EntityLemma> iterableLemmas =
-                findAllLemmasByLemma(lemmaCheck.getLemma());
-
-        for (EntityLemma lemmaDB : iterableLemmas) {
-            if (lemmaDB.getSiteId().getId() == lemmaCheck.getSiteId().getId()) {
-                return lemmaDB;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public Iterable<EntityLemma> findAllLemmasByLemma(String lemma) {
-        return lemmaRepo.findAllByLemma(lemma);
+    public void deleteLemma(EntityLemma lemma) {
+        lemmaRepo.delete(lemma);
     }
 
     @Override
     public int getCountLemmasInSite(EntitySite site) {
-        return lemmaRepo.countAllBySiteId(site);
-    }
-
-    @Override
-    public void deleteLemma(EntityLemma lemma) {
-        lemmaRepo.delete(lemma);
+        return lemmaRepo.countAllBySite(site);
     }
 
     @Override

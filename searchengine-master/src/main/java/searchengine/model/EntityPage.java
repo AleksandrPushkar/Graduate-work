@@ -12,7 +12,9 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "page")
+@Table(name = "page", uniqueConstraints = @UniqueConstraint(
+        columnNames = {"site_id", "path"}))
+
 public class EntityPage {
 
     @Id
@@ -21,9 +23,9 @@ public class EntityPage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", nullable = false)
-    private EntitySite siteId;
+    private EntitySite site;
 
-    @Column(columnDefinition = "TEXT NOT NULL, Index(path(50))")
+    @Column(columnDefinition = "TEXT NOT NULL")
     private String path;
 
     @NonNull
@@ -32,15 +34,15 @@ public class EntityPage {
     @Column(columnDefinition = "MEDIUMTEXT NOT NULL")
     private String content;
 
-    @OneToMany(mappedBy = "pageId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
     private Set<EntityIndex> indexes;
 
     public EntityPage(String path) {
         this.path = path;
     }
 
-    public EntityPage(EntitySite siteId, String path) {
-        this.siteId = siteId;
+    public EntityPage(EntitySite site, String path) {
+        this.site = site;
         this.path = path;
     }
 }

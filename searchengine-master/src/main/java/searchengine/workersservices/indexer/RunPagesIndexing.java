@@ -1,4 +1,4 @@
-package searchengine.indexer;
+package searchengine.workersservices.indexer;
 
 import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Document;
@@ -12,14 +12,14 @@ import java.util.concurrent.ForkJoinPool;
 
 @RequiredArgsConstructor
 public class RunPagesIndexing {
-    private String url;
-    private URL urlObj;
     private final int numberSites;
-    private EntitySite site;
-    private EntityPage page;
     private final JsoupConnect jsoupCon;
     private final IndexingService indexingService;
-    private final LemmaFinder lemmaFinder = new LemmaFinder();
+    private String url;
+    private URL urlObj;
+    private EntitySite site;
+    private EntityPage page;
+    private LemmaFinder lemmaFinder;
 
     private final String infoErrorInvalidUrl = "Некорректный URL " +
             "или не соответствует шаблону \"URL для индексации\"";
@@ -33,6 +33,7 @@ public class RunPagesIndexing {
         if (!checkUrlSite())
             return;
 
+        lemmaFinder = new LemmaFinder();
         if (lemmaFinder.getLuceneMorphology() == null) {
             lemmaFinderNotReadyWorkStopIndexing();
             return;
@@ -94,7 +95,7 @@ public class RunPagesIndexing {
                 return;
 
             EntityLemma lemma = new EntityLemma(site, strLemma, 1);
-            lemma = indexingService.synchronizedCheckSaveLemma(lemma);
+            lemma = indexingService.synchronizedLemmaSave(lemma);
             int quantity = lemmasPage.get(strLemma);
             EntityIndex index = new EntityIndex(page, lemma, quantity);
             indexingService.saveIndex(index);
@@ -103,7 +104,8 @@ public class RunPagesIndexing {
 
     private void runForkJoinPool(Document doc) {
         PagesIndexing parser = new PagesIndexing(url,
-                doc, site, jsoupCon, lemmaFinder, indexingService);
+                site, jsoupCon, lemmaFinder, indexingService, doc);
+
         ForkJoinPool pool = new ForkJoinPool();
         pool.invoke(parser);
     }
@@ -114,6 +116,7 @@ public class RunPagesIndexing {
             site.setLastError(infoErrorIndexingStopped);
         } else
             site.setStatus(StatusIndexing.INDEXED);
+
         indexingService.saveSite(site);
         finishIndexingInService();
     }
