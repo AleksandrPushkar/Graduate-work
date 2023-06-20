@@ -11,9 +11,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "lemma", uniqueConstraints = @UniqueConstraint(
-        columnNames = {"site_id", "lemma"}))
-
+@Table(name = "lemma", uniqueConstraints = @UniqueConstraint(columnNames = {"site_id", "lemma"}))
 public class EntityLemma {
 
     @Id

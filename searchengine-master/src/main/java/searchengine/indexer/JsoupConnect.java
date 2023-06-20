@@ -1,4 +1,4 @@
-package searchengine.workersservices.indexer;
+package searchengine.indexer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,6 @@ public class JsoupConnect {
                     .referrer(config.getReferrer())
                     .execute();
             statusCode = response.statusCode();
-
             Thread.sleep(145);
             doc = Jsoup.connect(url)
                     .userAgent(config.getUserAgent())
@@ -34,14 +33,15 @@ public class JsoupConnect {
                     .get();
         } catch (HttpStatusException ex) {
             statusCode = ex.getStatusCode();
-            if (site != null)
+            if (site != null) {
                 site.setLastError(buildTextHttpError(statusCode));
+            }
         } catch (Exception ex) {
             statusCode = 0;
-            if (site != null)
+            if (site != null) {
                 site.setLastError(buildTextAnotherError(ex));
+            }
         }
-
         page.setCode(statusCode);
         page.setContent(doc == null ? "" : doc.toString());
         return doc;

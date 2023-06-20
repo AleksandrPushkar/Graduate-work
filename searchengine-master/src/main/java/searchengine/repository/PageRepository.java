@@ -10,9 +10,10 @@ import java.util.List;
 @Repository
 public interface PageRepository extends CrudRepository<EntityPage, Integer> {
     int countAllBySite(EntitySite site);
-    List<EntityPage> findByIndexes_Lemma_LemmaAndIndexes_Lemma_SiteIn(
-            String lemma, Iterable<EntitySite> sites);
+
+    List<EntityPage> findBySiteInAndIndexes_Lemma_Lemma(Iterable<EntitySite> sites, String lemma);
 
     boolean existsBySiteAndPath(EntitySite site, String path);
+
     EntityPage findBySiteAndPath(EntitySite site, String path);
 }

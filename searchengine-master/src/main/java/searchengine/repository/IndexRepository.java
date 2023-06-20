@@ -5,9 +5,9 @@ import org.springframework.stereotype.Repository;
 import searchengine.model.EntityIndex;
 import searchengine.model.EntityPage;
 
-import java.util.HashSet;
+import java.util.Set;
 
 @Repository
 public interface IndexRepository extends CrudRepository<EntityIndex, Integer> {
-    HashSet<EntityIndex> findByPageAndLemma_LemmaIn(EntityPage page, Iterable<String> lemmas);
+    Set<EntityIndex> findByPageAndLemma_LemmaIn(EntityPage page, Iterable<String> lemmas);
 }
