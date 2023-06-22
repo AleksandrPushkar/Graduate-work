@@ -52,7 +52,9 @@ public class Searcher {
         List<SearchPage> sublistSortedPages = getSublist(searchOptionsRequest, sortedPages);
         SnippetGetterData snippetGetterData = new SnippetGetterData(
                 searchOptionsRequest.getQuery(), strLemmas, sublistSortedPages);
-        snippetsGetter.getSnippets(snippetGetterData);
+        if (!snippetsGetter.getSnippets(snippetGetterData)) {
+            return null;
+        }
         return new SearchResult(sortedPages.size(), sublistSortedPages);
     }
 

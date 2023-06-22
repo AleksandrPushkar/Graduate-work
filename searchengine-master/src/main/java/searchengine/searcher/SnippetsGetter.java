@@ -21,15 +21,19 @@ public class SnippetsGetter {
     private final TextMatcher textMatcher;
     private final TextHighlighter textHighlighter;
 
-    public void getSnippets(SnippetGetterData snippetGetterData) {
+    public boolean getSnippets(SnippetGetterData snippetGetterData) {
         for (SearchPage page : snippetGetterData.getPages()) {
             String pageText = getPageText(page);
             TreeMap<Integer, String> indexesAndWordForms = findWordFormsInPageText(
                     pageText, snippetGetterData.getLemmas());
+            if (indexesAndWordForms.isEmpty()) {
+                return false;
+            }
             String snippet = getSnippet(snippetGetterData.getQuery(), pageText, indexesAndWordForms);
             snippet = textHighlighter.highlightWordsInTextInBold(snippet, indexesAndWordForms.values());
             page.setSnippet(snippet);
         }
+        return true;
     }
 
     private String getPageText(SearchPage searchPage) {
