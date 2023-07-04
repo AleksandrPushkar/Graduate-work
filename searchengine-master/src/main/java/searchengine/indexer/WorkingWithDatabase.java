@@ -61,7 +61,7 @@ public class WorkingWithDatabase {
     }
 
     public void loopSaveLemmasAndIndexes(Document doc, EntityPage page, EntitySite site) {
-        for (Entry<String, Integer> entry : lemmaFinder.getLemmas(doc).entrySet()) {
+        for (Entry<String, Integer> entry : lemmaFinder.getPageLemmas(doc).entrySet()) {
             if (indexingService.isIndexingStopped()) {
                 return;
             }

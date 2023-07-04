@@ -6,27 +6,35 @@ import java.util.TreeMap;
 
 @Component
 public class TextMatcher {
-    public void findMatchesWordInText(String word, String text, TreeMap<Integer, String> indexesAndWords) {
+    public boolean findMatchesWordInText(String word, String text, boolean oneMatch,
+                                         TreeMap<Integer, String> indexesAndWords) {
+        int additionsCount = 0;
         int pageTextLength = text.length();
         int index = 0;
         while (true) {
             index = text.indexOf(word, index);
             if (index == -1) {
-                return;
+                return false;
             }
             int charIndexAfter = index + word.length();
             boolean isSuccessful = checkCharsOnSidesMatch(index, charIndexAfter, text);
-            if(isSuccessful) {
+            if (isSuccessful) {
                 indexesAndWords.put(index, word);
+                additionsCount += 1;
+            }
+            if (isSuccessful && oneMatch) {
+                return true;
             }
             index = charIndexAfter + 1;
-            if (index >= pageTextLength) {
-                return;
+            if (index >= pageTextLength && additionsCount > 0) {
+                return true;
+            } else if (index >= pageTextLength) {
+                return false;
             }
         }
     }
 
-    public boolean checkCharsOnSidesMatch(int matchStartIndex, int charIndexAfter, String text) {
+    private boolean checkCharsOnSidesMatch(int matchStartIndex, int charIndexAfter, String text) {
         if (charIndexAfter < text.length()) {
             return checkChars(matchStartIndex, charIndexAfter, text);
         }
@@ -36,17 +44,25 @@ public class TextMatcher {
     private boolean checkChars(int matchStartIndex, Integer charIndexAfter, String text) {
         boolean charBeforeNotRus = true;
         if (matchStartIndex != 0) {
-            charBeforeNotRus = checkCharNonRus(matchStartIndex - 1, text);
+            charBeforeNotRus = checkChar(false, matchStartIndex - 1, text);
         }
         if (charIndexAfter != null) {
-            boolean charAfterNotRus = checkCharNonRus(charIndexAfter, text);
+            boolean charAfterNotRus = checkChar(false, charIndexAfter, text);
             return charBeforeNotRus && charAfterNotRus;
         }
         return charBeforeNotRus;
     }
 
-    private boolean checkCharNonRus(int charIndex, String text) {
+    public boolean checkChar(boolean makeCheckNotHyphen, int charIndex, String text) {
         int charCode = text.charAt(charIndex);
+        boolean charNotRus = checkCharNonRus(charCode);
+        if (makeCheckNotHyphen) {
+            return charNotRus && charCode != '-';
+        }
+        return charNotRus;
+    }
+
+    private boolean checkCharNonRus(int charCode) {
         return charCode != 1025 && charCode < 1040
                 || charCode > 1103 && charCode != 1105;
     }

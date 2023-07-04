@@ -13,7 +13,7 @@ public class LemmaFinder {
     private final LuceneMorphology luceneMorphology;
     private static final String[] particlesNames = new String[]{"МЕЖД", "СОЮЗ", "ПРЕДЛ", " ЧАСТ"};
 
-    public Map<String, Integer> getLemmas(Document doc) {
+    public Map<String, Integer> getPageLemmas(Document doc) {
         String text = clearTags(doc);
         return collectLemmas(text);
     }
@@ -85,5 +85,9 @@ public class LemmaFinder {
             }
         }
         return wordSet;
+    }
+
+    public List<String> getWordLemmas(String word) {
+        return luceneMorphology.getNormalForms(word);
     }
 }

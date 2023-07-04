@@ -20,12 +20,12 @@ jsoup-settings:
 
 indexing-settings:
   sites:
-    - url: https://www.playback.ru
-      name: PlayBack.Ru
-    - url: https://skillbox.ru/
-      name: skillbox.ru
-    - url: https://volochek.life/
-      name: volochek.life
+#    - url: https://www.playback.ru
+#      name: PlayBack.Ru
+#    - url: https://skillbox.ru/
+#      name: skillbox.ru
+#    - url: https://volochek.life/
+#      name: volochek.life
     - url: https://radiomv.ru/
       name: radiomv.ru
     - url: https://ipfran.ru/

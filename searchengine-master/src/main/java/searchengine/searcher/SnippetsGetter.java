@@ -10,6 +10,7 @@ import searchengine.indexer.LemmaFinder;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static com.github.demidko.aot.WordformMeaning.lookupForMeanings;
 
@@ -22,36 +23,29 @@ public class SnippetsGetter {
     private final TextHighlighter textHighlighter;
 
     public boolean getSnippets(SnippetGetterData snippetGetterData) {
+        String query = snippetGetterData.getQuery();
+        Map<String, Set<String>> lemmasAndWordForms = new HashMap<>();
+        getWordFormsLemmas(snippetGetterData.getLemmas(), lemmasAndWordForms);
+        Set<String> wordFormsAllLemmas = getWordFormsInOneSet(lemmasAndWordForms.values());
         for (SearchPage page : snippetGetterData.getPages()) {
             String pageText = getPageText(page);
-            TreeMap<Integer, String> indexesAndWordForms = findWordFormsInPageText(
-                    pageText, snippetGetterData.getLemmas());
-            if (indexesAndWordForms.isEmpty()) {
+            String snippet = getSnippet(query, pageText, lemmasAndWordForms);
+            if (snippet == null) {
                 return false;
             }
-            String snippet = getSnippet(snippetGetterData.getQuery(), pageText, indexesAndWordForms);
-            snippet = textHighlighter.highlightWordsInTextInBold(snippet, indexesAndWordForms.values());
+            snippet = textHighlighter.highlightWordsInTextInBold(snippet, wordFormsAllLemmas);
+            if (snippet == null) {
+                return false;
+            }
             page.setSnippet(snippet);
         }
         return true;
     }
 
-    private String getPageText(SearchPage searchPage) {
-        EntityPage entityPage = searchPage.getEntityPage();
-        Document doc = Jsoup.parse(entityPage.getContent());
-        searchPage.setTitle(doc.title());
-        return doc.text();
-    }
-
-    private TreeMap<Integer, String> findWordFormsInPageText(String pageText, List<String> lemmas) {
-        TreeMap<Integer, String> indexesAndWordForms = new TreeMap<>();
-        pageText = pageText.toLowerCase(Locale.ROOT);
+    private void getWordFormsLemmas(Set<String> lemmas, Map<String, Set<String>> lemmasAndWordForms) {
         for (String lemma : lemmas) {
-            for (String wordForm : getWordFormsLemma(lemma)) {
-                textMatcher.findMatchesWordInText(wordForm, pageText, indexesAndWordForms);
-            }
+            lemmasAndWordForms.put(lemma, getWordFormsLemma(lemma));
         }
-        return indexesAndWordForms;
     }
 
     private Set<String> getWordFormsLemma(String lemma) {
@@ -68,127 +62,82 @@ public class SnippetsGetter {
         return uniqueWordFormsLemma;
     }
 
-    private String getSnippet(String query, String pageText, TreeMap<Integer, String> indexesAndWordForms) {
+    private Set<String> getWordFormsInOneSet(Collection<Set<String>> wordFormsLemmas) {
+        return wordFormsLemmas.stream().flatMap(Set::stream).collect(Collectors.toSet());
+    }
+
+    private String getPageText(SearchPage searchPage) {
+        EntityPage entityPage = searchPage.getEntityPage();
+        Document doc = Jsoup.parse(entityPage.getContent());
+        searchPage.setTitle(doc.title());
+        return doc.text();
+    }
+
+    private String getSnippet(String query, String pageText, Map<String, Set<String>> lemmasAndWordForms) {
         if (pageText.length() < REQUIRED_SNIPPET_LENGTH) {
             return pageText;
         }
-        String snippet = getSnippetFromFirstToLatestMatch(pageText, indexesAndWordForms);
-        if (snippet.length() == REQUIRED_SNIPPET_LENGTH) {
-            return snippet;
+        String snippet = getSnippetByQueryWords(query, lemmasAndWordForms.keySet(), pageText);
+        if (snippet == null) {
+            snippet = getSnippetByWordForms(pageText, lemmasAndWordForms.values());
         }
-        if (snippet.length() > REQUIRED_SNIPPET_LENGTH) {
-            return reduceSnippetLength(query, snippet, pageText, indexesAndWordForms);
-        }
-        int matchStartIndex = indexesAndWordForms.firstKey();
-        Entry<Integer, String> entry = indexesAndWordForms.lastEntry();
-        int matchEndIndex = entry.getKey() + entry.getValue().length();
-        return increaseSnippetLength(snippet, pageText, matchStartIndex, matchEndIndex);
+        return snippet;
     }
 
-    private String getSnippetFromFirstToLatestMatch(String pageText, TreeMap<Integer, String> indexesAndWordForms) {
-        if (indexesAndWordForms.size() == 1) {
-            return indexesAndWordForms.firstEntry().getValue();
-        }
-        int startIndex = indexesAndWordForms.firstKey();
-        Entry<Integer, String> entry = indexesAndWordForms.lastEntry();
-        int finishIndex = entry.getKey() + entry.getValue().length();
-        return pageText.substring(startIndex, finishIndex);
-    }
-
-    private String reduceSnippetLength(String query, String snippetFromLemmas, String pageText,
-                                       TreeMap<Integer, String> indexesAndWordForms) {
-        String snippetFromQueryWords = getSnippetByQueryWords(query, pageText, indexesAndWordForms);
-        if (snippetFromQueryWords != null) {
-            return snippetFromQueryWords;
-        }
-        StringBuilder snippetBuilder = getStringBuilderWithThreeWords(pageText, indexesAndWordForms.firstKey());
-        String[] words = snippetFromLemmas.split("\\s+");
-        for (String word : words) {
-            int futureSnippetLength = snippetBuilder.length() + 1 + word.length();
-            if (futureSnippetLength > REQUIRED_SNIPPET_LENGTH) {
-                break;
-            }
-            snippetBuilder.append(" ");
-            snippetBuilder.append(word);
-        }
-        return snippetBuilder.toString();
-    }
-
-    private String getSnippetByQueryWords(String query, String pageText, TreeMap<Integer, String> indexesAndWordForms) {
-        TreeMap<Integer, String> indexesAndQueryWords = findQueryWordsInMatchesWordForms(query, indexesAndWordForms);
-        if (indexesAndQueryWords.size() == 0) {
-            return null;
-        }
-        int startIndex = indexesAndQueryWords.firstKey();
-        int endIndex = indexesAndQueryWords.lastKey() + indexesAndQueryWords.lastEntry().getValue().length();
-        int snippetLength = endIndex - startIndex;
-        if (snippetLength == REQUIRED_SNIPPET_LENGTH) {
-            return pageText.substring(startIndex, endIndex);
-        }
-        if (snippetLength > REQUIRED_SNIPPET_LENGTH) {
-            return getSnippetFromQueryWordsEvenShorterLength(pageText, indexesAndQueryWords);
-        }
-        String snippet = pageText.substring(startIndex, endIndex);
-        return increaseSnippetLength(snippet, pageText, startIndex, endIndex);
-    }
-
-    private TreeMap<Integer, String> findQueryWordsInMatchesWordForms(String query,
-                                                                      TreeMap<Integer, String> indexesAndWordForms) {
+    private String getSnippetByQueryWords(String query, Set<String> lemmas, String pageText) {
         Set<String> queryWords = lemmaFinder.excludeParticles(query);
-        TreeMap<Integer, String> indexesAndQueryWords = new TreeMap<>();
+        excludeWordsThatWereNotTakenWhenSearchPages(queryWords, lemmas);
+        TreeMap<Integer, String> indexesMatchesAndQueryWords = new TreeMap<>();
         for (String queryWord : queryWords) {
-            if (indexesAndWordForms.containsValue(queryWord)) {
-                addQueryWordInMap(queryWord, indexesAndQueryWords, indexesAndWordForms);
+            boolean matchFound = textMatcher.findMatchesWordInText(queryWord, pageText, true,
+                    indexesMatchesAndQueryWords);
+            if (!matchFound) {
+                return null;
             }
         }
-        return indexesAndQueryWords;
+        return buildSnippetFromMatches(pageText, indexesMatchesAndQueryWords);
     }
 
-    private void addQueryWordInMap(String queryWord, TreeMap<Integer, String> indexesAndQueryWords,
-                                                     TreeMap<Integer, String> indexesAndWordForms) {
-        for (Entry<Integer, String> entry : indexesAndWordForms.entrySet()) {
-            if (entry.getValue().equals(queryWord)) {
-                indexesAndQueryWords.put(entry.getKey(), entry.getValue());
+    private void excludeWordsThatWereNotTakenWhenSearchPages(Set<String> queryWords, Set<String> lemmas) {
+        Iterator<String> queryWordIterator = queryWords.iterator();
+        while (queryWordIterator.hasNext()) {
+            boolean excludeWord = checkWordLemmasThatTheyWereNotIncludedInSearch(queryWordIterator.next(), lemmas);
+            if (excludeWord) {
+                queryWordIterator.remove();
             }
         }
     }
 
-    private String getSnippetFromQueryWordsEvenShorterLength(String pageText,
-                                                             TreeMap<Integer, String> indexesAndQueryWords) {
-        int startIndex = indexesAndQueryWords.firstKey();
-        int finishIndex = 0;
-        for (Entry<Integer, String> entry : indexesAndQueryWords.entrySet()) {
-            int matchEndIndex = entry.getKey() + entry.getValue().length();
-            int estimatedSnippetLength = matchEndIndex - startIndex;
-            if (estimatedSnippetLength > REQUIRED_SNIPPET_LENGTH) {
-                break;
+    private boolean checkWordLemmasThatTheyWereNotIncludedInSearch(String queryWord, Set<String> searcherLemmas) {
+        List<String> queryWordLemmas = lemmaFinder.getWordLemmas(queryWord);
+        for (String queryWordLemma : queryWordLemmas) {
+            if (searcherLemmas.contains(queryWordLemma)) {
+                return false;
             }
-            finishIndex = matchEndIndex;
         }
-        if (finishIndex == 0) {
-            return null;
-        }
-        String snippet = pageText.substring(startIndex, finishIndex);
-        return increaseSnippetLength(snippet, pageText, startIndex, finishIndex);
+        return true;
     }
 
-    private StringBuilder getStringBuilderWithThreeWords(String pageText, int matchStartIndex) {
-        StringBuilder stringBuilder = new StringBuilder();
-        String[] wordsBeforeMatches = getArrayWordsNotIncludedInSnippet(0, matchStartIndex, pageText);
-        for (int i = wordsBeforeMatches.length; i > 0; i--) {
-            String word = wordsBeforeMatches[i - 1];
-            stringBuilder.insert(0, word);
-            if ((i == wordsBeforeMatches.length - 2) || i == 1) {
-                break;
-            }
-            stringBuilder.insert(0, " ");
+    private String buildSnippetFromMatches(String pageText, TreeMap<Integer, String> indexesAndMatches) {
+        int beginIndex = indexesAndMatches.firstKey();
+        int endIndex = indexesAndMatches.lastKey() + indexesAndMatches.lastEntry().getValue().length();
+        int snippetLength = endIndex - beginIndex;
+        if (snippetLength < REQUIRED_SNIPPET_LENGTH) {
+            String snippet = pageText.substring(beginIndex, endIndex);
+            return increaseSnippetLength(snippet, pageText, beginIndex, endIndex);
         }
-        return stringBuilder;
+        int[] numberCharsBetweenMatches = getArrayWithNumberCharsBetweenMatches(pageText.length(), indexesAndMatches);
+        TreeMap<Integer, int[]> indexesMatchesAndNumberChars = splitCharsBetweenMatches(numberCharsBetweenMatches,
+                indexesAndMatches.keySet());
+        int requiredNumberCharsInTwoArraysOneMatch = (REQUIRED_SNIPPET_LENGTH
+                - getTotalLengthAllWordsInMatches(indexesAndMatches)) / indexesAndMatches.size();
+        adjustNumberCharsMatches(requiredNumberCharsInTwoArraysOneMatch, indexesMatchesAndNumberChars);
+        return executeBuildSnippetFromMatches(pageText, indexesMatchesAndNumberChars, indexesAndMatches);
     }
 
-    private String increaseSnippetLength(String snippet, String text, int startIndex, int endIndex) {
-        String[] wordsBeforeMatches = getArrayWordsNotIncludedInSnippet(0, startIndex, text);
-        String[] wordsAfterMatches = getArrayWordsNotIncludedInSnippet(endIndex, null, text);
+    private String increaseSnippetLength(String snippet, String text, int matchBeginIndex, int matchEndIndex) {
+        String[] wordsBeforeMatches = getArrayWordsNotIncludedInSnippet(0, matchBeginIndex, text);
+        String[] wordsAfterMatches = getArrayWordsNotIncludedInSnippet(matchEndIndex, null, text);
         int i = 1;
         StringBuilder snippetBuilder = new StringBuilder(snippet);
         while (true) {
@@ -240,5 +189,284 @@ public class SnippetsGetter {
             snippetBuilder.append(word);
         }
         return true;
+    }
+
+    private int[] getArrayWithNumberCharsBetweenMatches(int pageTextLength,
+                                                        TreeMap<Integer, String> indexesAndMatches) {
+        int[] numberChars = new int[indexesAndMatches.size() + 1];
+        int endPreviousMatch = 0;
+        int indexInArray = 0;
+        for (Entry<Integer, String> entry : indexesAndMatches.entrySet()) {
+            numberChars[indexInArray] = entry.getKey() - endPreviousMatch;
+            endPreviousMatch = entry.getKey() + entry.getValue().length();
+            indexInArray++;
+            if (entry.equals(indexesAndMatches.lastEntry())) {
+                numberChars[indexInArray] = pageTextLength - endPreviousMatch;
+            }
+        }
+        return numberChars;
+    }
+
+    private TreeMap<Integer, int[]> splitCharsBetweenMatches(int[] numberCharsBetweenMatches,
+                                                             Set<Integer> matchesIndexes) {
+        TreeMap<Integer, int[]> matchesIndexesAndNumberChars = new TreeMap<>();
+        int i = 0;
+        for (Integer matchIndex : matchesIndexes) {
+            int[] numberChars = new int[2];
+            if (i == 0) {
+                numberChars[0] = numberCharsBetweenMatches[i];
+            } else {
+                numberChars[0] = numberCharsBetweenMatches[i] / 2;
+            }
+            i++;
+            if (i == matchesIndexes.size()) {
+                numberChars[1] = numberCharsBetweenMatches[i];
+            } else {
+                numberChars[1] = numberCharsBetweenMatches[i] / 2;
+            }
+            matchesIndexesAndNumberChars.put(matchIndex, numberChars);
+        }
+        return matchesIndexesAndNumberChars;
+    }
+
+    private int getTotalLengthAllWordsInMatches(TreeMap<Integer, String> indexesAndMatches) {
+        int totalLength = 0;
+        for (String word : indexesAndMatches.values()) {
+            totalLength += word.length();
+        }
+        return totalLength + (indexesAndMatches.size() - 1);
+    }
+
+    private void adjustNumberCharsMatches(int requiredNumberCharsInTwoArraysOneMatch,
+                                          TreeMap<Integer, int[]> matchesIndexesAndNumberChars) {
+        Map<Integer, Integer> matchesIndexesAndNumberMissingChars = findMatchesWithSmallNumberChars(
+                requiredNumberCharsInTwoArraysOneMatch, matchesIndexesAndNumberChars);
+        int totalNumberMissingChars = calculateTotalNumberMissingChars(matchesIndexesAndNumberMissingChars.values());
+        int requiredNumberCharsInOneArray = getLengthForOneArrayTheMatch(requiredNumberCharsInTwoArraysOneMatch);
+        for (Entry<Integer, int[]> entry : matchesIndexesAndNumberChars.entrySet()) {
+            if (matchesIndexesAndNumberMissingChars.containsKey(entry.getKey())) {
+                continue;
+            }
+            totalNumberMissingChars = AdjustNumberCharsMatch(requiredNumberCharsInOneArray, totalNumberMissingChars,
+                    entry.getValue());
+        }
+    }
+
+    private Map<Integer, Integer> findMatchesWithSmallNumberChars(int requiredNumberChars,
+                                                                  TreeMap<Integer, int[]>
+                                                                          matchesIndexesAndNumberChars) {
+        Map<Integer, Integer> matchesIndexesAndNumberMissingChars = new HashMap<>();
+        for (Entry<Integer, int[]> entry : matchesIndexesAndNumberChars.entrySet()) {
+            int[] numberChars = entry.getValue();
+            int totalNumberChars = numberChars[0] + numberChars[1];
+            int numberMissingChars = totalNumberChars - requiredNumberChars;
+            if (numberMissingChars < 0) {
+                numberMissingChars = Math.abs(numberMissingChars);
+                matchesIndexesAndNumberMissingChars.put(entry.getKey(), numberMissingChars);
+            }
+        }
+        return matchesIndexesAndNumberMissingChars;
+    }
+
+    private int calculateTotalNumberMissingChars(Collection<Integer> numberMissingChars) {
+        int totalNumberMissingChars = 0;
+        for (Integer missingChars : numberMissingChars) {
+            totalNumberMissingChars += missingChars;
+        }
+        return totalNumberMissingChars;
+    }
+
+    private int getLengthForOneArrayTheMatch(int requiredNumberCharsInTwoArraysOneMatch) {
+        if (requiredNumberCharsInTwoArraysOneMatch <= 0) {
+            return 0;
+        }
+        if (requiredNumberCharsInTwoArraysOneMatch == 1) {
+            return 1;
+        }
+        return requiredNumberCharsInTwoArraysOneMatch / 2;
+    }
+
+    private Integer AdjustNumberCharsMatch(int requiredNumberCharsInOneArray,
+                                           int totalNumberMissingChars, int[] numberCharsArray) {
+        int firstElementIndex = 0;
+        int secondElementIndex = 1;
+        int lessChars = numberCharsArray[firstElementIndex];
+        int moreChars = numberCharsArray[secondElementIndex];
+        if (lessChars > moreChars) {
+            int temp = moreChars;
+            moreChars = lessChars;
+            lessChars = temp;
+            firstElementIndex = 1;
+            secondElementIndex = 0;
+        }
+        Integer result = adjustOneNumberChars(firstElementIndex, lessChars, requiredNumberCharsInOneArray,
+                totalNumberMissingChars, numberCharsArray);
+        if (result == null) {
+            requiredNumberCharsInOneArray += (requiredNumberCharsInOneArray - lessChars);
+        } else {
+            totalNumberMissingChars = result;
+        }
+        return adjustOneNumberChars(secondElementIndex, moreChars, requiredNumberCharsInOneArray,
+                totalNumberMissingChars, numberCharsArray);
+    }
+
+    private Integer adjustOneNumberChars(int arrayIndex, int numberCharsInArray, int requiredNumberCharsInOneArray,
+                                         int totalNumberMissingChars, int[] numberCharsArray) {
+        if (numberCharsInArray < requiredNumberCharsInOneArray) {
+            return null;
+        }
+        int numberFreeChars = numberCharsInArray - requiredNumberCharsInOneArray;
+        if (numberFreeChars <= totalNumberMissingChars) {
+            return totalNumberMissingChars - numberFreeChars;
+        }
+        numberFreeChars -= totalNumberMissingChars;
+        numberCharsArray[arrayIndex] = numberCharsInArray - numberFreeChars;
+        return 0;
+    }
+
+    private String executeBuildSnippetFromMatches(String pageText, TreeMap<Integer, int[]> matchesIndexesAndNumberChars,
+                                                  TreeMap<Integer, String> indexesAndMatches) {
+        StringBuilder builder = new StringBuilder();
+        for (Entry<Integer, int[]> entry : matchesIndexesAndNumberChars.entrySet()) {
+            String word = indexesAndMatches.get(entry.getKey());
+            int[] numberChars = entry.getValue();
+            int numberCharsFromLeft = numberChars[0];
+            int numberCharsFromRight = numberChars[1];
+            addSubstringToStringBuilder(true, numberCharsFromLeft, entry.getKey(),
+                    null, pageText, builder);
+            builder.append(word);
+            addSubstringToStringBuilder(false, numberCharsFromRight, null,
+                    entry.getKey() + word.length(), pageText, builder);
+            if (!entry.equals(matchesIndexesAndNumberChars.lastEntry())) {
+                builder.append(" ");
+            }
+        }
+        return builder.toString();
+    }
+
+    private void addSubstringToStringBuilder(boolean fromLeft, int numberCharsInSubstring, Integer matchBeginIndex,
+                                             Integer matchEndIndex, String pageText, StringBuilder builder) {
+        if (numberCharsInSubstring == 0) {
+            return;
+        }
+        if (fromLeft) {
+            String leftSubstring = pageText.substring(matchBeginIndex - numberCharsInSubstring, matchBeginIndex);
+            leftSubstring = adjustOneSideSubstring(true, matchBeginIndex, null,
+                    leftSubstring, pageText);
+            builder.append(leftSubstring);
+            return;
+        }
+        String rightSubstring = pageText.substring(matchEndIndex, matchEndIndex + numberCharsInSubstring);
+        rightSubstring = adjustOneSideSubstring(false, null, matchEndIndex,
+                rightSubstring, pageText);
+        builder.append(rightSubstring);
+    }
+
+    private String adjustOneSideSubstring(boolean fromLeft, Integer matchBeginIndex, Integer matchEndIndex,
+                                          String substring, String pageText) {
+        if (fromLeft) {
+            if (substring.charAt(0) == ' ') {
+                return removeSpaceOnOneSide(true, substring);
+            }
+            return deletePartWordOnOneSideIfWasBreak(true, matchBeginIndex, null,
+                    substring, pageText);
+        }
+        if (substring.charAt(substring.length() - 1) == ' ') {
+            return removeSpaceOnOneSide(false, substring);
+        }
+        return deletePartWordOnOneSideIfWasBreak(false, null, matchEndIndex, substring, pageText);
+    }
+
+    private String removeSpaceOnOneSide(boolean fromLeft, String substring) {
+        int numberSpaces = getNumberSpaces(fromLeft, substring);
+        if (numberSpaces == 0) {
+            return substring;
+        }
+        if (fromLeft) {
+            return substring.substring(numberSpaces);
+        }
+        return substring.substring(0, substring.length() - numberSpaces);
+    }
+
+    private int getNumberSpaces(boolean fromLeft, String substring) {
+        int count = 0;
+        while (true) {
+            if (count == substring.length()) {
+                break;
+            }
+            char symbol;
+            if (fromLeft) {
+                symbol = substring.charAt(count);
+            } else {
+                symbol = substring.charAt(substring.length() - 1 - count);
+            }
+            if (symbol != ' ') {
+                break;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    private String deletePartWordOnOneSideIfWasBreak(boolean fromLeft, Integer matchBeginIndex, Integer matchEndIndex,
+                                                     String substring, String pageText) {
+        int substringLength = substring.length();
+        int charIndex;
+        if (fromLeft) {
+            charIndex = matchBeginIndex - substringLength - 1;
+        } else {
+            charIndex = matchEndIndex + substringLength;
+        }
+        if (charIndex < 0 || charIndex == pageText.length()) {
+            return substring;
+        }
+        if (textMatcher.checkChar(true, charIndex, pageText)) {
+            return substring;
+        }
+        if (fromLeft) {
+            return removeBreak(true, substring);
+        }
+        return removeBreak(false, substring);
+    }
+
+    private String removeBreak(boolean fromLeft, String substring) {
+        int spaceIndex;
+        if (fromLeft) {
+            spaceIndex = substring.indexOf(' ');
+        } else {
+            spaceIndex = substring.lastIndexOf(' ');
+        }
+        if (spaceIndex == -1) {
+            return "";
+        }
+        if (fromLeft) {
+            substring = substring.substring(spaceIndex + 1);
+            return removeSpaceOnOneSide(true, substring);
+        }
+        substring = substring.substring(0, spaceIndex);
+        return removeSpaceOnOneSide(false, substring);
+    }
+
+    private String getSnippetByWordForms(String pageText, Collection<Set<String>> wordFormsLemmas) {
+        pageText = pageText.toLowerCase(Locale.ROOT);
+        TreeMap<Integer, String> matchesIndexesAndWordForms = new TreeMap<>();
+        for (Set<String> wordFormsLemma : wordFormsLemmas) {
+            if (!findWordForm(pageText, wordFormsLemma, matchesIndexesAndWordForms)) {
+                return null;
+            }
+        }
+        return buildSnippetFromMatches(pageText, matchesIndexesAndWordForms);
+    }
+
+    private boolean findWordForm(String pageText, Set<String> wordFormsLemma,
+                                 TreeMap<Integer, String> matchesIndexesAndWordForms) {
+        for (String wordForm : wordFormsLemma) {
+            boolean matchFound = textMatcher.findMatchesWordInText(wordForm, pageText,
+                    true, matchesIndexesAndWordForms);
+            if (matchFound) {
+                return true;
+            }
+        }
+        return false;
     }
 }

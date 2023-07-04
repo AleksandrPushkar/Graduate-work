@@ -17,6 +17,7 @@ import searchengine.repository.SiteRepository;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class Searcher {
         if (pagesWithAllLemmas == null) {
             return null;
         }
-        List<String> strLemmas = getStrLemmas(objLemmas);
+        Set<String> strLemmas = getStrLemmas(objLemmas);
         Map<EntityPage, Float> pagesRelevance = calculateAbsRelevance(strLemmas, pagesWithAllLemmas);
         calculateRelRelevance(pagesRelevance);
         List<SearchPage> sortedPages = sortPagesDescRelevance(pagesRelevance);
@@ -154,11 +155,11 @@ public class Searcher {
         return pagesWithFollowingLemma;
     }
 
-    private List<String> getStrLemmas(List<Lemma> objLemmas) {
-        return objLemmas.stream().map(Lemma::getLemma).toList();
+    private Set<String> getStrLemmas(List<Lemma> objLemmas) {
+        return objLemmas.stream().map(Lemma::getLemma).collect(Collectors.toSet());
     }
 
-    private Map<EntityPage, Float> calculateAbsRelevance(List<String> strLemmas,
+    private Map<EntityPage, Float> calculateAbsRelevance(Set<String> strLemmas,
                                                          Set<EntityPage> pagesWithAllLemmas) {
         Map<EntityPage, Float> pagesRelevance = new HashMap<>();
         for (EntityPage page : pagesWithAllLemmas) {
