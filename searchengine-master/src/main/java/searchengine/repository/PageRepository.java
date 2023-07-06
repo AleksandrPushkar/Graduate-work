@@ -13,7 +13,7 @@ public interface PageRepository extends CrudRepository<EntityPage, Integer> {
 
     List<EntityPage> findBySiteInAndIndexes_Lemma_Lemma(Iterable<EntitySite> sites, String lemma);
 
-    boolean existsBySiteAndPath(EntitySite site, String path);
+    boolean existsByPathAndSite(String path, EntitySite site);
 
-    EntityPage findBySiteAndPath(EntitySite site, String path);
+    EntityPage findByPathAndSite(String path, EntitySite site);
 }

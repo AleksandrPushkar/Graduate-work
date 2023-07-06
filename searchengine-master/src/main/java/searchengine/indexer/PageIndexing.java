@@ -70,7 +70,7 @@ public class PageIndexing {
             return site;
         }
         page.setSite(site);
-        EntityPage foundPage = pageRepo.findBySiteAndPath(page.getSite(), page.getPath());
+        EntityPage foundPage = pageRepo.findByPathAndSite(page.getPath(), page.getSite());
         if (foundPage != null) {
             deleteFoundPage(foundPage);
         }

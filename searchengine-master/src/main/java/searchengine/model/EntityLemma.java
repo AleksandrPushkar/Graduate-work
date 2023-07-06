@@ -11,7 +11,8 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "lemma", uniqueConstraints = @UniqueConstraint(columnNames = {"site_id", "lemma"}))
+
+@Table(name = "lemma")
 public class EntityLemma {
 
     @Id
@@ -22,7 +23,7 @@ public class EntityLemma {
     @JoinColumn(name = "site_id", nullable = false)
     private EntitySite site;
 
-    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+    @Column(columnDefinition = "VARCHAR(255) NOT NULL, Index(lemma, site_id)")
     private String lemma;
 
     @NonNull

@@ -24,12 +24,12 @@ public class SnippetsGetter {
 
     public boolean getSnippets(SnippetGetterData snippetGetterData) {
         String query = snippetGetterData.getQuery();
-        Map<String, Set<String>> lemmasAndWordForms = new HashMap<>();
-        getWordFormsLemmas(snippetGetterData.getLemmas(), lemmasAndWordForms);
+        Map<String, Set<String>> lemmasAndWordForms = getWordFormsLemmas(snippetGetterData.getLemmas());
+        Set<String> queryWords = getQueryWordsThatParticipatedInSearch(query, lemmasAndWordForms);
         Set<String> wordFormsAllLemmas = getWordFormsInOneSet(lemmasAndWordForms.values());
         for (SearchPage page : snippetGetterData.getPages()) {
             String pageText = getPageText(page);
-            String snippet = getSnippet(query, pageText, lemmasAndWordForms);
+            String snippet = getSnippet(pageText, queryWords, lemmasAndWordForms.values());
             if (snippet == null) {
                 return false;
             }
@@ -42,10 +42,12 @@ public class SnippetsGetter {
         return true;
     }
 
-    private void getWordFormsLemmas(Set<String> lemmas, Map<String, Set<String>> lemmasAndWordForms) {
+    private Map<String, Set<String>> getWordFormsLemmas(Set<String> lemmas) {
+        Map<String, Set<String>> lemmasAndWordForms = new HashMap<>();
         for (String lemma : lemmas) {
             lemmasAndWordForms.put(lemma, getWordFormsLemma(lemma));
         }
+        return  lemmasAndWordForms;
     }
 
     private Set<String> getWordFormsLemma(String lemma) {
@@ -62,6 +64,37 @@ public class SnippetsGetter {
         return uniqueWordFormsLemma;
     }
 
+    private Set<String> getQueryWordsThatParticipatedInSearch(String query,
+                                                              Map<String, Set<String>> lemmasAndWordForms){
+        Set<String> queryWords = lemmaFinder.excludeParticles(query);
+        excludeWordsThatWereNotTakenWhenSearchPages(queryWords, lemmasAndWordForms);
+        return queryWords;
+    }
+
+    private void excludeWordsThatWereNotTakenWhenSearchPages(Set<String> queryWords,
+                                                             Map<String, Set<String>> lemmasAndWordForms) {
+        Iterator<String> queryWordIterator = queryWords.iterator();
+        while (queryWordIterator.hasNext()) {
+            boolean excludeWord = checkWordLemmasThatTheyWereNotIncludedInSearch(queryWordIterator.next(),
+                    lemmasAndWordForms);
+            if (excludeWord) {
+                queryWordIterator.remove();
+            }
+        }
+    }
+
+    private boolean checkWordLemmasThatTheyWereNotIncludedInSearch(String queryWord,
+                                                                   Map<String, Set<String>> lemmasAndWordForms) {
+        List<String> queryWordLemmas = lemmaFinder.getWordLemmas(queryWord);
+        for (String queryWordLemma : queryWordLemmas) {
+            if (lemmasAndWordForms.containsKey(queryWordLemma)) {
+                lemmasAndWordForms.get(queryWordLemma).add(queryWord);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Set<String> getWordFormsInOneSet(Collection<Set<String>> wordFormsLemmas) {
         return wordFormsLemmas.stream().flatMap(Set::stream).collect(Collectors.toSet());
     }
@@ -73,49 +106,27 @@ public class SnippetsGetter {
         return doc.text();
     }
 
-    private String getSnippet(String query, String pageText, Map<String, Set<String>> lemmasAndWordForms) {
+    private String getSnippet(String pageText, Set<String> queryWords, Collection<Set<String>> wordFormsLemmas) {
         if (pageText.length() < REQUIRED_SNIPPET_LENGTH) {
             return pageText;
         }
-        String snippet = getSnippetByQueryWords(query, lemmasAndWordForms.keySet(), pageText);
+        String snippet = getSnippetByQueryWords(pageText, queryWords);
         if (snippet == null) {
-            snippet = getSnippetByWordForms(pageText, lemmasAndWordForms.values());
+            snippet = getSnippetByWordForms(pageText, wordFormsLemmas);
         }
         return snippet;
     }
 
-    private String getSnippetByQueryWords(String query, Set<String> lemmas, String pageText) {
-        Set<String> queryWords = lemmaFinder.excludeParticles(query);
-        excludeWordsThatWereNotTakenWhenSearchPages(queryWords, lemmas);
-        TreeMap<Integer, String> indexesMatchesAndQueryWords = new TreeMap<>();
+    private String getSnippetByQueryWords(String pageText, Set<String> queryWords) {
+        TreeMap<Integer, String> matchesIndexesAndQueryWords = new TreeMap<>();
         for (String queryWord : queryWords) {
             boolean matchFound = textMatcher.findMatchesWordInText(queryWord, pageText, true,
-                    indexesMatchesAndQueryWords);
+                    matchesIndexesAndQueryWords);
             if (!matchFound) {
                 return null;
             }
         }
-        return buildSnippetFromMatches(pageText, indexesMatchesAndQueryWords);
-    }
-
-    private void excludeWordsThatWereNotTakenWhenSearchPages(Set<String> queryWords, Set<String> lemmas) {
-        Iterator<String> queryWordIterator = queryWords.iterator();
-        while (queryWordIterator.hasNext()) {
-            boolean excludeWord = checkWordLemmasThatTheyWereNotIncludedInSearch(queryWordIterator.next(), lemmas);
-            if (excludeWord) {
-                queryWordIterator.remove();
-            }
-        }
-    }
-
-    private boolean checkWordLemmasThatTheyWereNotIncludedInSearch(String queryWord, Set<String> searcherLemmas) {
-        List<String> queryWordLemmas = lemmaFinder.getWordLemmas(queryWord);
-        for (String queryWordLemma : queryWordLemmas) {
-            if (searcherLemmas.contains(queryWordLemma)) {
-                return false;
-            }
-        }
-        return true;
+        return buildSnippetFromMatches(pageText, matchesIndexesAndQueryWords);
     }
 
     private String buildSnippetFromMatches(String pageText, TreeMap<Integer, String> indexesAndMatches) {
@@ -460,8 +471,8 @@ public class SnippetsGetter {
 
     private boolean findWordForm(String pageText, Set<String> wordFormsLemma,
                                  TreeMap<Integer, String> matchesIndexesAndWordForms) {
-        for (String wordForm : wordFormsLemma) {
-            boolean matchFound = textMatcher.findMatchesWordInText(wordForm, pageText,
+        for (String wordFormLemma : wordFormsLemma) {
+            boolean matchFound = textMatcher.findMatchesWordInText(wordFormLemma, pageText,
                     true, matchesIndexesAndWordForms);
             if (matchFound) {
                 return true;

@@ -12,7 +12,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "page", uniqueConstraints = @UniqueConstraint(columnNames = {"site_id", "path"}))
+
+@Table(name = "page")
 public class EntityPage {
 
     @Id
@@ -23,7 +24,7 @@ public class EntityPage {
     @JoinColumn(name = "site_id", nullable = false)
     private EntitySite site;
 
-    @Column(columnDefinition = "TEXT NOT NULL")
+    @Column(columnDefinition = "TEXT NOT NULL, Index(path(400), site_id)")
     private String path;
 
     @NonNull

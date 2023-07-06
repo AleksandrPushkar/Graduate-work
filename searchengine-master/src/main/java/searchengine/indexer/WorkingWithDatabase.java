@@ -40,7 +40,7 @@ public class WorkingWithDatabase {
 
     public boolean synchronizedSavePage(EntityPage page) {
         synchronized (pageRepo) {
-            boolean exists = pageRepo.existsBySiteAndPath(page.getSite(), page.getPath());
+            boolean exists = pageRepo.existsByPathAndSite(page.getPath(), page.getSite());
             if (exists) {
                 return false;
             }
@@ -51,13 +51,14 @@ public class WorkingWithDatabase {
 
     public EntityLemma synchronizedSaveLemma(EntityLemma lemma) {
         synchronized (lemmaRepo) {
-            EntityLemma foundLemma = lemmaRepo.findBySiteAndLemma(lemma.getSite(), lemma.getLemma());
+            EntityLemma foundLemma = lemmaRepo.findByLemmaAndSite(lemma.getLemma(), lemma.getSite());
             if (foundLemma != null) {
                 foundLemma.setFrequency(foundLemma.getFrequency() + 1);
                 lemma = foundLemma;
             }
             return lemmaRepo.save(lemma);
         }
+
     }
 
     public void loopSaveLemmasAndIndexes(Document doc, EntityPage page, EntitySite site) {
