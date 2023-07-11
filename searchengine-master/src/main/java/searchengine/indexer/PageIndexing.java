@@ -12,6 +12,7 @@ import searchengine.model.*;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
+import searchengine.services.indexing.IndexingService;
 
 import java.net.URL;
 import java.util.List;
@@ -27,16 +28,19 @@ public class PageIndexing {
     private final LemmaRepository lemmaRepo;
     private final WorkingWithUrl workingUrl;
     private final WorkingWithDatabase workerDB;
+    private final IndexingService indexingService;
 
     public void indexing(String url) {
         String pageUrl = workingUrl.urlCorrection(url);
         if (pageUrl == null || workingUrl.checkForDisqualification(pageUrl)) {
+            indexingService.setIndexingRunning(false);
             throw new InvalidUrlException();
         }
         Site configSite = findSiteInList(pageUrl);
         EntityPage page = new EntityPage(workingUrl.cutUrlToPath(pageUrl));
         Document doc = jsoupCon.getPageCode(pageUrl, page, null);
         if (doc == null) {
+            indexingService.setIndexingRunning(false);
             throw new PageCodeNotReceivedException(page.getCode());
         }
         EntitySite site = addPageInDB(configSite, page);
@@ -58,6 +62,7 @@ public class PageIndexing {
                 return site;
             }
         }
+        indexingService.setIndexingRunning(false);
         throw new SiteNotFoundException();
     }
 

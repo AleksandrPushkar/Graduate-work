@@ -42,13 +42,12 @@ public class IndexingServiceImpl implements IndexingService {
         if (indexingRunning) {
             throw new IndexingAlreadyRunningException();
         }
+        indexingRunning = true;
         if(indexPageURLRequest != null) {
-            indexingRunning = true;
             pageIndexing.indexing(indexPageURLRequest.getUrl());
             indexingRunning = false;
             return new IndexingResponse(true);
         }
-        indexingRunning = true;
         for (Site site : sitesList) {
             new Thread(() -> runPagesIndexing.indexing(site)).start();
         }
