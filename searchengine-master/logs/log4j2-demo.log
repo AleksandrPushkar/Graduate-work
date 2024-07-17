@@ -1,0 +1,85 @@
+2024-07-17 15:10:21.381  INFO WIN-J045R8VF8SJ --- [           main] s.Application                            : Starting Application using Java 17.0.11 on WIN-J045R8VF8SJ with PID 6444 (D:\IT\Скилбокс\Graduate-work\searchengine-master\target\classes started by User in D:\IT\Скилбокс\Graduate-work\searchengine-master)
+2024-07-17 15:10:21.399  INFO WIN-J045R8VF8SJ --- [           main] s.Application                            : No active profile set, falling back to 1 default profile: "default"
+2024-07-17 15:10:23.219  INFO WIN-J045R8VF8SJ --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-17 15:10:23.352  INFO WIN-J045R8VF8SJ --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 115 ms. Found 4 JPA repository interfaces.
+2024-07-17 15:10:24.641  INFO WIN-J045R8VF8SJ --- [           main] o.s.b.w.e.t.TomcatWebServer              : Tomcat initialized with port(s): 8080 (http)
+2024-07-17 15:10:24.678  INFO WIN-J045R8VF8SJ --- [           main] o.a.c.h.Http11NioProtocol                : Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-17 15:10:24.679  INFO WIN-J045R8VF8SJ --- [           main] o.a.c.c.StandardService                  : Starting service [Tomcat]
+2024-07-17 15:10:24.680  INFO WIN-J045R8VF8SJ --- [           main] o.a.c.c.StandardEngine                   : Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-17 15:10:24.908  INFO WIN-J045R8VF8SJ --- [           main] o.a.c.c.C.[.[.[/]                        : Initializing Spring embedded WebApplicationContext
+2024-07-17 15:10:24.909  INFO WIN-J045R8VF8SJ --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3403 ms
+2024-07-17 15:10:25.332  INFO WIN-J045R8VF8SJ --- [           main] o.h.j.i.u.LogHelper                      : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-17 15:10:25.440  INFO WIN-J045R8VF8SJ --- [           main] o.h.Version                              : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-17 15:10:25.856  INFO WIN-J045R8VF8SJ --- [           main] o.h.a.c.Version                          : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-17 15:10:26.098  INFO WIN-J045R8VF8SJ --- [           main] c.z.h.HikariDataSource                   : HikariPool-1 - Starting...
+2024-07-17 15:10:26.444  INFO WIN-J045R8VF8SJ --- [           main] c.z.h.HikariDataSource                   : HikariPool-1 - Start completed.
+2024-07-17 15:10:26.473  INFO WIN-J045R8VF8SJ --- [           main] o.h.d.Dialect                            : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-17 15:10:27.963  INFO WIN-J045R8VF8SJ --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-17 15:10:27.975  INFO WIN-J045R8VF8SJ --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-17 15:10:29.540  WARN WIN-J045R8VF8SJ --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-17 15:10:29.779  INFO WIN-J045R8VF8SJ --- [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2024-07-17 15:10:30.110  INFO WIN-J045R8VF8SJ --- [           main] o.a.c.h.Http11NioProtocol                : Starting ProtocolHandler ["http-nio-8080"]
+2024-07-17 15:10:30.145  INFO WIN-J045R8VF8SJ --- [           main] o.s.b.w.e.t.TomcatWebServer              : Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-17 15:10:30.160  INFO WIN-J045R8VF8SJ --- [           main] s.Application                            : Started Application in 9.792 seconds (JVM running for 12.229)
+2024-07-17 15:10:49.865  INFO WIN-J045R8VF8SJ --- [nio-8080-exec-1] o.a.c.c.C.[.[.[/]                        : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-17 15:10:49.965  INFO WIN-J045R8VF8SJ --- [nio-8080-exec-1] o.s.w.s.DispatcherServlet                : Initializing Servlet 'dispatcherServlet'
+2024-07-17 15:10:50.035  INFO WIN-J045R8VF8SJ --- [nio-8080-exec-1] o.s.w.s.DispatcherServlet                : Completed initialization in 70 ms
+2024-07-17 15:10:54.233  INFO WIN-J045R8VF8SJ --- [       Thread-2] s.i.RunPagesIndexing                     : Эта запись будет залогирована
+2024-07-17 15:10:54.233  INFO WIN-J045R8VF8SJ --- [       Thread-1] s.i.RunPagesIndexing                     : Эта запись будет залогирована
+2024-07-17 15:11:25.540  WARN WIN-J045R8VF8SJ --- [l-1 housekeeper] c.z.h.p.HikariPool                       : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=58s976ms963µs800ns).
+2024-07-17 15:12:03.216  INFO WIN-J045R8VF8SJ --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-17 15:12:03.246  INFO WIN-J045R8VF8SJ --- [ionShutdownHook] c.z.h.HikariDataSource                   : HikariPool-1 - Shutdown initiated...
+2024-07-17 15:12:03.279  INFO WIN-J045R8VF8SJ --- [ionShutdownHook] c.z.h.HikariDataSource                   : HikariPool-1 - Shutdown completed.
+2024-07-17 16:35:04.041 INFO main : Starting Application using Java 17.0.11 on WIN-J045R8VF8SJ with PID 8436 (D:\IT\Скилбокс\Graduate-work\searchengine-master\target\classes started by User in D:\IT\Скилбокс\Graduate-work\searchengine-master)
+%2024-07-17 16:35:04.081 INFO main : No active profile set, falling back to 1 default profile: "default"
+%2024-07-17 16:35:05.410 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+%2024-07-17 16:35:05.522 INFO main : Finished Spring Data repository scanning in 97 ms. Found 4 JPA repository interfaces.
+%2024-07-17 16:35:06.433 INFO main : Tomcat initialized with port(s): 8080 (http)
+%2024-07-17 16:35:06.463 INFO main : Initializing ProtocolHandler ["http-nio-8080"]
+%2024-07-17 16:35:06.463 INFO main : Starting service [Tomcat]
+%2024-07-17 16:35:06.464 INFO main : Starting Servlet engine: [Apache Tomcat/9.0.64]
+%2024-07-17 16:35:06.624 INFO main : Initializing Spring embedded WebApplicationContext
+%2024-07-17 16:35:06.625 INFO main : Root WebApplicationContext: initialization completed in 2458 ms
+%2024-07-17 16:35:06.882 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+%2024-07-17 16:35:06.994 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+%2024-07-17 16:35:07.344 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+%2024-07-17 16:35:07.614 INFO main : HikariPool-1 - Starting...
+%2024-07-17 16:35:07.941 INFO main : HikariPool-1 - Start completed.
+%2024-07-17 16:35:07.972 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+%2024-07-17 16:35:09.269 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+%2024-07-17 16:35:09.280 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+%2024-07-17 16:35:10.339 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+%2024-07-17 16:35:10.678 INFO main : Adding welcome page template: index
+%2024-07-17 16:35:10.950 INFO main : Starting ProtocolHandler ["http-nio-8080"]
+%2024-07-17 16:35:10.994 INFO main : Tomcat started on port(s): 8080 (http) with context path ''
+%2024-07-17 16:35:11.005 INFO main : Started Application in 8.028 seconds (JVM running for 10.05)
+%2024-07-17 16:44:08.803 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+%2024-07-17 16:44:08.880 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+%2024-07-17 16:44:08.951 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+%2024-07-17 16:44:14.838 INFO main : Starting Application using Java 17.0.11 on WIN-J045R8VF8SJ with PID 8764 (D:\IT\Скилбокс\Graduate-work\searchengine-master\target\classes started by User in D:\IT\Скилбокс\Graduate-work\searchengine-master)
+%2024-07-17 16:44:14.856 INFO main : No active profile set, falling back to 1 default profile: "default"
+%2024-07-17 16:44:16.297 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+%2024-07-17 16:44:16.427 INFO main : Finished Spring Data repository scanning in 109 ms. Found 4 JPA repository interfaces.
+%2024-07-17 16:44:17.666 INFO main : Tomcat initialized with port(s): 8080 (http)
+%2024-07-17 16:44:17.702 INFO main : Initializing ProtocolHandler ["http-nio-8080"]
+%2024-07-17 16:44:17.703 INFO main : Starting service [Tomcat]
+%2024-07-17 16:44:17.704 INFO main : Starting Servlet engine: [Apache Tomcat/9.0.64]
+%2024-07-17 16:44:17.932 INFO main : Initializing Spring embedded WebApplicationContext
+%2024-07-17 16:44:17.933 INFO main : Root WebApplicationContext: initialization completed in 2978 ms
+%2024-07-17 16:44:18.521 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+%2024-07-17 16:44:18.675 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+%2024-07-17 16:44:19.176 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+%2024-07-17 16:44:19.323 INFO main : HikariPool-1 - Starting...
+%2024-07-17 16:44:19.648 INFO main : HikariPool-1 - Start completed.
+%2024-07-17 16:44:19.680 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+%2024-07-17 16:44:20.992 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+%2024-07-17 16:44:21.000 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+%2024-07-17 16:44:22.242 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+%2024-07-17 16:44:22.470 INFO main : Adding welcome page template: index
+%2024-07-17 16:44:22.762 INFO main : Starting ProtocolHandler ["http-nio-8080"]
+%2024-07-17 16:44:22.798 INFO main : Tomcat started on port(s): 8080 (http) with context path ''
+%2024-07-17 16:44:22.812 INFO main : Started Application in 9.016 seconds (JVM running for 11.304)
+%2024-07-17 17:03:16.645 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+%2024-07-17 17:03:16.830 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+%2024-07-17 17:03:17.033 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+%

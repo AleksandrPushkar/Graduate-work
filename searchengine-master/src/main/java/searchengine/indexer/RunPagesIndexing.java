@@ -1,6 +1,8 @@
 package searchengine.indexer;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 import searchengine.config.Site;
@@ -24,11 +26,13 @@ public class RunPagesIndexing {
     private final WorkingWithUrl workerUrl;
     private final WorkingWithDatabase workerDB;
     private final IndexingService indexingService;
+    private static Logger logger = LogManager.getLogger(RunPagesIndexing.class);
 
     private final String infoErrorInvalidUrl = "Некорректный URL или не соответствует шаблону \"URL для индексации\"";
     private final String infoErrorIndexingStopped = "Индексация остановлена пользователем";
 
     public void indexing(Site configSite) {
+        logger.info("Эта запись будет залогирована");
         workerDB.deleteSite(configSite);
         EntitySite site = workerDB.saveNewSite(configSite);
         URL urlObj = checkUrlSite(site);
