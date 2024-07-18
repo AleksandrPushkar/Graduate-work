@@ -2,7 +2,7 @@
 <Configuration status="DEBUG">
     <Properties>
         <Property name="LOG_PATTERN">
-            %d{yyyy-MM-dd HH:mm:ss.SSS} %p %t : %m%n%
+            %d{yyyy-MM-dd HH:mm:ss.SSS} %p %t : %m%n
         </Property>
     </Properties>
     <Appenders>
@@ -23,7 +23,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="INFO">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="FileAppender" />
         </Root>

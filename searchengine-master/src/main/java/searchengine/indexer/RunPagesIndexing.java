@@ -15,6 +15,7 @@ import searchengine.services.indexing.IndexingService;
 import java.net.URL;
 import java.util.concurrent.ForkJoinPool;
 
+@SuppressWarnings("ALL")
 @Component
 @RequiredArgsConstructor
 public class RunPagesIndexing {
@@ -32,15 +33,18 @@ public class RunPagesIndexing {
     private final String infoErrorIndexingStopped = "Индексация остановлена пользователем";
 
     public void indexing(Site configSite) {
-        logger.info("Эта запись будет залогирована");
         workerDB.deleteSite(configSite);
         EntitySite site = workerDB.saveNewSite(configSite);
         URL urlObj = checkUrlSite(site);
         if (urlObj == null) {
             return;
         }
+// блок кода, время выполнения которого нужно измерить
         EntityPage page = new EntityPage(site, urlObj.getPath());
+        long startTime = System.currentTimeMillis();
         Document doc = jsoupCon.getPageCode(urlObj.toString(), page, site);
+        long endTime = System.currentTimeMillis();
+        logger.info("getting page code " + urlObj.getPath() + " - " + (startTime - endTime) + " ms");
         if (doc == null) {
             pageCodeNotReceivedStopIndexing(page, site);
             return;

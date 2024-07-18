@@ -1,6 +1,8 @@
 package searchengine.indexer;
 
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -24,6 +26,7 @@ public class PagesIndexing extends RecursiveAction {
     private final WorkingWithDatabase workingDB;
     private final IndexingService indexingService;
     private Document docRef;
+    private static Logger logger = LogManager.getLogger(RunPagesIndexing.class);
 
 
     @Override
@@ -54,7 +57,10 @@ public class PagesIndexing extends RecursiveAction {
                 href = workerUrl.cutUrlToPath(href);
             }
             EntityPage page = new EntityPage(site, href);
+            long startTime = System.currentTimeMillis();
             Document docHref = jsoupCon.getPageCode(absHref, page, null);
+            long endTime = System.currentTimeMillis();
+            logger.info("getting page code " + page.getPath() + " - " + (startTime - endTime) + " ms");
             if (workingDB.synchronizedSavePage(page)) {
                 workingDB.updateSiteStatusTime(site);
                 if (docHref != null) {
