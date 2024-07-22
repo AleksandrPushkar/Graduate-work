@@ -60,7 +60,7 @@ public class PagesIndexing extends RecursiveAction {
             long startTime = System.currentTimeMillis();
             Document docHref = jsoupCon.getPageCode(absHref, page, null);
             long endTime = System.currentTimeMillis();
-            logger.info("getting page code " + page.getPath() + " ссылка н" (docHref == null) " - " + (endTime - startTime) + " ms");
+            logger.info("getting page code " + page.getPath() + /*" ссылка н" (docHref == null)*/ " - " + (endTime - startTime) + " ms");
             if (workingDB.synchronizedSavePage(page)) {
                 workingDB.updateSiteStatusTime(site);
                 if (docHref != null) {
