@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.net.URL;
+//import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,4 +22,6 @@ public class WorkingWithUrlTest {
         String cutUrl = workingWithUrl.cutUrlToPath(url);
         assertEquals("/education/course", cutUrl);
     }
+
+
 }
