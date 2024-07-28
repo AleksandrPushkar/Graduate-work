@@ -16,3 +16,129 @@
 2024-07-26 09:33:43.443 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
 2024-07-26 09:33:43.505 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
 2024-07-26 09:33:43.606 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 14:16:59.095 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 5424 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 14:16:59.104 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 14:16:59.892 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 14:16:59.967 INFO main : Finished Spring Data repository scanning in 66 ms. Found 4 JPA repository interfaces.
+2024-07-28 14:17:00.636 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 14:17:00.696 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 14:17:00.886 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 14:17:01.084 INFO main : HikariPool-1 - Starting...
+2024-07-28 14:17:01.277 INFO main : HikariPool-1 - Start completed.
+2024-07-28 14:17:01.293 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 14:17:02.036 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 14:17:02.045 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 14:17:03.203 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 14:17:03.527 INFO main : Adding welcome page template: index
+2024-07-28 14:17:03.992 INFO main : Started WorkingWithUrlTest in 5.336 seconds (JVM running for 6.588)
+2024-07-28 14:17:06.129 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 14:17:06.131 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 14:17:06.141 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 14:18:58.950 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 1772 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 14:18:58.959 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 14:18:59.732 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 14:18:59.804 INFO main : Finished Spring Data repository scanning in 65 ms. Found 4 JPA repository interfaces.
+2024-07-28 14:19:00.514 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 14:19:00.587 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 14:19:00.817 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 14:19:01.014 INFO main : HikariPool-1 - Starting...
+2024-07-28 14:19:01.223 INFO main : HikariPool-1 - Start completed.
+2024-07-28 14:19:01.239 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 14:19:01.987 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 14:19:01.999 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 14:19:03.181 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 14:19:03.508 INFO main : Adding welcome page template: index
+2024-07-28 14:19:03.965 INFO main : Started WorkingWithUrlTest in 5.438 seconds (JVM running for 6.877)
+2024-07-28 14:19:06.004 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 14:19:06.007 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 14:19:06.017 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 15:14:12.064 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 8300 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 15:14:12.073 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 15:14:13.048 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 15:14:13.141 INFO main : Finished Spring Data repository scanning in 80 ms. Found 4 JPA repository interfaces.
+2024-07-28 15:14:13.807 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 15:14:13.862 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 15:14:14.056 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 15:14:14.251 INFO main : HikariPool-1 - Starting...
+2024-07-28 15:14:14.448 INFO main : HikariPool-1 - Start completed.
+2024-07-28 15:14:14.464 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 15:14:15.188 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 15:14:15.202 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 15:14:16.326 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 15:14:16.651 INFO main : Adding welcome page template: index
+2024-07-28 15:14:17.087 INFO main : Started WorkingWithUrlTest in 5.438 seconds (JVM running for 6.882)
+2024-07-28 15:14:19.340 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 15:14:19.342 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 15:14:19.355 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 16:34:15.614 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 8952 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 16:34:15.634 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 16:34:16.392 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 16:34:16.471 INFO main : Finished Spring Data repository scanning in 68 ms. Found 4 JPA repository interfaces.
+2024-07-28 16:34:17.154 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 16:34:17.209 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 16:34:17.424 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 16:34:17.603 INFO main : HikariPool-1 - Starting...
+2024-07-28 16:34:17.800 INFO main : HikariPool-1 - Start completed.
+2024-07-28 16:34:17.815 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 16:34:18.580 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 16:34:18.591 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:34:19.741 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 16:34:20.067 INFO main : Adding welcome page template: index
+2024-07-28 16:34:20.503 INFO main : Started WorkingWithUrlTest in 5.32 seconds (JVM running for 6.966)
+2024-07-28 16:34:22.549 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:34:22.551 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 16:34:22.560 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 16:38:55.744 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 7232 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 16:38:55.760 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 16:38:56.493 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 16:38:56.574 INFO main : Finished Spring Data repository scanning in 70 ms. Found 4 JPA repository interfaces.
+2024-07-28 16:38:57.213 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 16:38:57.271 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 16:38:57.494 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 16:38:57.659 INFO main : HikariPool-1 - Starting...
+2024-07-28 16:38:57.840 INFO main : HikariPool-1 - Start completed.
+2024-07-28 16:38:57.858 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 16:38:58.673 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 16:38:58.686 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:38:59.858 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 16:39:00.190 INFO main : Adding welcome page template: index
+2024-07-28 16:39:00.668 INFO main : Started WorkingWithUrlTest in 5.331 seconds (JVM running for 6.903)
+2024-07-28 16:39:02.769 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:39:02.772 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 16:39:02.781 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 16:49:51.947 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 7700 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 16:49:51.968 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 16:49:52.730 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 16:49:52.803 INFO main : Finished Spring Data repository scanning in 64 ms. Found 4 JPA repository interfaces.
+2024-07-28 16:49:53.523 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 16:49:53.581 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 16:49:53.798 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 16:49:53.995 INFO main : HikariPool-1 - Starting...
+2024-07-28 16:49:54.203 INFO main : HikariPool-1 - Start completed.
+2024-07-28 16:49:54.220 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 16:49:54.988 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 16:49:54.999 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:49:56.236 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 16:49:56.552 INFO main : Adding welcome page template: index
+2024-07-28 16:49:57.001 INFO main : Started WorkingWithUrlTest in 5.442 seconds (JVM running for 7.065)
+2024-07-28 16:49:59.122 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:49:59.124 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 16:49:59.134 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.
+2024-07-28 16:52:44.614 INFO main : Starting WorkingWithUrlTest using Java 17.0.12 on DESKTOP-JFVS9DC with PID 6580 (started by Александр in H:\JAVA\Skillbox\ИтоговыйПроект\Graduate-work\searchengine-master)
+2024-07-28 16:52:44.636 INFO main : No active profile set, falling back to 1 default profile: "default"
+2024-07-28 16:52:45.363 INFO main : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-28 16:52:45.444 INFO main : Finished Spring Data repository scanning in 72 ms. Found 4 JPA repository interfaces.
+2024-07-28 16:52:46.091 INFO main : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-28 16:52:46.145 INFO main : HHH000412: Hibernate ORM core version 5.6.9.Final
+2024-07-28 16:52:46.334 INFO main : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-07-28 16:52:46.517 INFO main : HikariPool-1 - Starting...
+2024-07-28 16:52:46.703 INFO main : HikariPool-1 - Start completed.
+2024-07-28 16:52:46.720 INFO main : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2024-07-28 16:52:47.480 INFO main : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-28 16:52:47.489 INFO main : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:52:48.609 WARN main : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-28 16:52:48.932 INFO main : Adding welcome page template: index
+2024-07-28 16:52:49.381 INFO main : Started WorkingWithUrlTest in 5.163 seconds (JVM running for 6.78)
+2024-07-28 16:52:51.525 INFO SpringApplicationShutdownHook : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-28 16:52:51.528 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown initiated...
+2024-07-28 16:52:51.548 INFO SpringApplicationShutdownHook : HikariPool-1 - Shutdown completed.

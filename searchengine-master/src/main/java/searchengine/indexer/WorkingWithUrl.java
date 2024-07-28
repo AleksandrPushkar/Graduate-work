@@ -9,9 +9,9 @@ import java.net.URL;
 public class WorkingWithUrl {
     private static final String REGEX_URL = "https?://[\\w&&[^_]]+-?[\\w&&[^_]]*\\..+";
     private static final String REGEX_URL_HAS_WWW = "https?://www\\..+";
-    private static final String[] invalidEndingsFourChars = new String[]{
+    private static final String[] invalidEndings4Chars = new String[]{
             ".zip", ".pdf", ".png", ".jpg", ".ico", ".doc"};
-    private static final String[] invalidEndingsFiveChars = new String[]{".json", ".docx", ".jpeg"};
+    private static final String[] invalidEndings5Chars = new String[]{".json", ".docx", ".jpeg"};
 
     public String urlCorrection(String url) {
         if (!url.matches(REGEX_URL)) {
@@ -54,9 +54,9 @@ public class WorkingWithUrl {
     private boolean checkInvalidUrl(String ending) {
         String[] invalidEndings;
         if (ending.length() == 4) {
-            invalidEndings = invalidEndingsFourChars;
+            invalidEndings = invalidEndings4Chars;
         } else {
-            invalidEndings = invalidEndingsFiveChars;
+            invalidEndings = invalidEndings5Chars;
         }
         for (String invalidEnding : invalidEndings) {
             if (ending.equals(invalidEnding)) {
